@@ -49,4 +49,10 @@ class ForecastRetriever(object):
             print('Getting cached location forecast')
             data = self.db.get_location_data(loc.latitude, loc.longitude)
 
+        #import json
+        #data['_id'] = None
+        #f = open('sample.json','w')
+        #f.write(json.dumps(data))
+        #f.close()
+            
         return data
