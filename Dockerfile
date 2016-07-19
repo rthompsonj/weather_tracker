@@ -25,6 +25,7 @@ RUN pip install \
     geopy
 
 COPY * /WEATHER/
+COPY templates /WEATHER/templates
 WORKDIR "/WEATHER"
 
 EXPOSE 5000
