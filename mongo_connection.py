@@ -59,6 +59,7 @@ class MongoConnection(object):
             return True
         else:
             if (current_time - result['time_updated']) > 10.*60.: # 10 minutes
+                print('Time exceeded!')
                 return True
             else:
                 return False

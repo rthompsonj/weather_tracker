@@ -3,14 +3,16 @@
 
     <form action="/" method="POST">
       <label><h4><u>LOCATION</u></h4>
-        <input type="text" name="location", value="{{ current_loc }}">
+        <input type="text" name="location">
       </label>
       <input type="submit" value="Submit">
     </form>
     
     {% for day in day_data %}
     {{ day.temperatureMin }} --- {{ day.temperatureMax }} <br>
-    {% endfor %}                            
+    {% endfor %}
+
+    <br>Current Location: <b>{{ current_loc }}</b> <br>
     
   </body>
 </html>
