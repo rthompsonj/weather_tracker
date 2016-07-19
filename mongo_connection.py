@@ -40,7 +40,7 @@ class MongoConnection(object):
         """Converts current time into POSIX time integer."""
         return int(datetime.datetime.now().strftime('%s'))
 
-    def get_location(self, latitude, longitude):
+    def get_location_data(self, latitude, longitude):
         """Gets a location in the DB.  If not present returns None."""
         return self.db.cache.find_one({
             'latitude' :round(latitude, 6),
@@ -53,7 +53,7 @@ class MongoConnection(object):
         10 minutes or the location does not exist in the cache.  False
         otherwise."""
         current_time = self.get_strftime()
-        result = self.get_location(latitude, longitude)
+        result = self.get_location_data(latitude, longitude)
 
         if result is None:
             return True
@@ -64,9 +64,9 @@ class MongoConnection(object):
             else:
                 return False
 
-    def cache_location(self, data):
+    def cache_location_data(self, data):
         """Cache the given location to the db"""
-        result = self.get_location(data['latitude'], data['longitude'])
+        result = self.get_location_data(data['latitude'], data['longitude'])
 
         data['time_updated'] = self.get_strftime()
         if result is not None:
@@ -75,3 +75,10 @@ class MongoConnection(object):
         else:
             print('Creating entry')
             self.db.cache.insert_one(data)
+
+    def get_location_name(self, loc_request):
+        return self.db.name_cache.find_one({'name':loc_request})
+
+    def cache_location_name(self, loc_request, loc):
+        loc['name'] = loc_request
+        self.db.name_cache.insert_one(loc)

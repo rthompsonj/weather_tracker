@@ -17,11 +17,20 @@ class ForecastRetriever(object):
         return '%s/%s/%f,%f' % (URL, APIKEY, latitude, longitude)
 
     def _get_location(self, loc_request):
-        try:
-            loc = self.geolocator.geocode(loc_request)
-            return loc
-        except:
-            raise ValueError('Enter a valid geocode!')
+        loc_request = loc_request.lower()
+        
+        cached_loc = self.db.get_location_name(loc_request)
+        if cached_loc is None:
+            try:
+                loc = self.geolocator.geocode(loc_request)
+                self.db.cache_location_name(loc_request, loc.raw)
+                print('Caching location name')
+                return loc
+            except:
+                raise ValueError('Enter a valid geocode!')
+        else:
+            print('Returning cached location name')
+            return self.geolocator.parse_code(cached_loc)
 
     def set_location(self, loc_request):
         self.current_location = loc_request
@@ -31,13 +40,13 @@ class ForecastRetriever(object):
         loc = self._get_location(loc_request)
 
         if self.db.update_location(loc.latitude, loc.longitude):
-            print('Refreshing location')
+            print('Refreshing location forecast')
             url = self._get_url(loc.latitude, loc.longitude)
             request = urllib2.urlopen(url).read()
             data = json.loads(request)
-            self.db.cache_location(data)
+            self.db.cache_location_data(data)
         else:
-            print('Getting cached location')
-            data = self.db.get_location(loc.latitude, loc.longitude)
+            print('Getting cached location forecast')
+            data = self.db.get_location_data(loc.latitude, loc.longitude)
 
         return data
