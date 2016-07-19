@@ -17,8 +17,70 @@
   </head>
   <body>
 
-    <div class="container-fluid" align="center">
+    <ul class="nav nav-tabs">
+      {% for i in range(0, forecast_data|length) %}
+      {% if i==0 %}
+      <li class="active">
+        {% else %}
+      <li>
+        {% endif %}
+        <a data-toggle="tab" href="#tab{{ i }}">{{ forecast_data[i]['location'].address.split(',')[0] }}</a></li>
+      {% endfor %}
+    </ul>
+
+    <div class="tab-content">
+
+      {% for i in range(0, forecast_data|length) %}
+      {% if i==0 %}
+      <div id="tab{{ i }}" class="tab-pane fade in active">
+        {% else %}
+        <div id="tab{{ i }}" class="tab-pane fade">
+          {% endif %}
+
+        <!-- CONTENT -->
+        <br>
+        <div class="container-fluid" align="center">
+          <div class="col-sm-2"></div>
+          {% for day in forecast_data[i]['data'] %}
+          <div class="col-sm-1">
+            <i class="wi wi-{{ icons[day.icon] }}"></i><br>
+            <script type="text/javascript">
+              document.write(returnDate({{ day.time }}))
+            </script><br>
+            H: {{ day.temperatureMax }} <br>
+            L: {{ day.temperatureMin }} <br>
+          </div>
+          {% endfor %}
+          <div class="col-sm-2"></div>
+        </div> <!-- first row -->
+
+        <br>
+        <div class="container-fluid" align="center">
+          <b>{{ forecast_data[i]['location'].address }}</b>
+        </div>        
+
+        <!-- END CONTENT -->
+
+      </div> <!-- tab{{ i }} -->
+
+      {% endfor %}           
+      
+    </div> <!-- tab-content -->
+  
     
+    <!--
+    <div class="container-fluid" align="center">
+
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+        <li ><a data-toggle="tab" href="#home">M1</a></li>
+        <li ><a data-toggle="tab" href="#home">M2</a></li>
+        <li ><a data-toggle="tab" href="#home">M3</a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <div id="home" class="tab-pane fade in active">
       <form action="/" method="POST">
         <label><h4><u>LOCATION</u></h4>
           <input type="text" name="location">
@@ -46,8 +108,21 @@
       </div>
       
       <br>Current Location: <b>{{ current_loc }}</b> <br>
+        </div>
+
+        <div id="menu1" class="tab-pane fade">
+          menu1 content
+        </div>
+        <div id="menu1" class="tab-pane fade">
+          menu2 content
+        </div>
+        <div id="menu1" class="tab-pane fade">
+          menu3 content
+        </div>
       
-    </div>
+      </div>
+      </div>
+    -->
     
   </body>
 </html>
