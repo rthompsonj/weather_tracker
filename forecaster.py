@@ -32,9 +32,9 @@ class ForecastRetriever(object):
             print('Returning cached location name')
             return self.geolocator.parse_code(cached_loc)
 
-    def set_location(self, loc_request):
-        self.current_location = loc_request
-        self.current_data = self.get_forecast(loc_request)
+    #def set_location(self, loc_request):
+    #    self.current_location = loc_request
+    #    self.current_data = self.get_forecast(loc_request)
 
     def get_forecast(self, loc_request):
         loc = self._get_location(loc_request)
@@ -42,7 +42,9 @@ class ForecastRetriever(object):
         if self.db.update_location(loc.latitude, loc.longitude):
             print('Refreshing location forecast')
             url = self._get_url(loc.latitude, loc.longitude)
+            print(url)
             request = urllib2.urlopen(url).read()
+            print('after request')
             data = json.loads(request)
             self.db.cache_location_data(data)
         else:

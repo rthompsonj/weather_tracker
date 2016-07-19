@@ -17,7 +17,7 @@
   </head>
   <body>
 
-    <div class="container-fluid">
+    <div class="container-fluid" align="center">
     
       <form action="/" method="POST">
         <label><h4><u>LOCATION</u></h4>
@@ -27,17 +27,22 @@
       </form>
 
       <div class="row">
-      
-        {% for day in day_data %}
-        <div class="col-sm-1">
-          <script type="text/javascript">
-            document.write(returnDate({{ day.time }}))
-          </script>
-          {{ day.temperatureMin }} --- {{ day.temperatureMax }}
-          <i class="wi wi-{{ icons[day.icon] }}"></i>
-        </div>
-        {% endfor %}
 
+        <div class="col-sm-2"></div>
+        
+          {% for day in day_data %}
+        <div class="col-sm-1">
+          <i class="wi wi-{{ icons[day.icon] }}"></i><br>
+            <script type="text/javascript">
+              document.write(returnDate({{ day.time }}))
+            </script><br>
+            H: {{ day.temperatureMax }} <br>
+            L: {{ day.temperatureMin }} <br>
+          </div>
+          {% endfor %}
+
+          <div class="col-sm-2"></div>
+          
       </div>
       
       <br>Current Location: <b>{{ current_loc }}</b> <br>

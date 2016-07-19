@@ -4,7 +4,8 @@ app = Flask(__name__)
 
 from forecaster import ForecastRetriever
 FORECASTER = ForecastRetriever()
-FORECASTER.set_location('austin')
+#FORECASTER.set_location('austin')
+loc = 'austin'
 
 icons = {
     'clear-day': 'day-sunny',
@@ -26,10 +27,16 @@ icons = {
 def index():
     rf = request.form
     if 'location' in rf:
-        FORECASTER.set_location(rf['location'])
+        loc = rf['location']
+        #FORECASTER.set_location(rf['location'])
+    else:
+        loc = 'austin'
+
     return render_template('index.html',
-                           day_data = FORECASTER.current_data['daily']['data'],
-                           current_loc = FORECASTER.current_location,
+                           #day_data = FORECASTER.current_data['daily']['data'],
+                           #current_loc = FORECASTER.current_location,
+                           day_data = FORECASTER.get_forecast(loc)['daily']['data'],
+                           current_loc = loc,
                            icons=icons)
 
 
