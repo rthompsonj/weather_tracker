@@ -49,7 +49,7 @@ class MongoConnection(object):
 
     def update_location(self, latitude, longitude):
         """Returns true/false depending on if we need to request
-        a new forcast.  True when the time last cached has exceeded
+        a new forecast.  True when the time last cached has exceeded
         10 minutes or the location does not exist in the cache.  False
         otherwise."""
         current_time = self.get_strftime()

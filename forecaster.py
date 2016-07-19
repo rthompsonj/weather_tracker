@@ -8,7 +8,7 @@ REINIT = False
 URL = 'https://api.forecast.io/forecast'
 
 
-class ForcastRetriever(object):
+class ForecastRetriever(object):
     def __init__(self):
         self.geolocator = Nominatim()
         self.db = MongoConnection(reinit=REINIT)
@@ -25,9 +25,9 @@ class ForcastRetriever(object):
 
     def set_location(self, loc_request):
         self.current_location = loc_request
-        self.current_data = self.get_forcast(loc_request)
+        self.current_data = self.get_forecast(loc_request)
 
-    def get_forcast(self, loc_request):
+    def get_forecast(self, loc_request):
         loc = self._get_location(loc_request)
 
         if self.db.update_location(loc.latitude, loc.longitude):
