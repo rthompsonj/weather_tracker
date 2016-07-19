@@ -1,0 +1,16 @@
+<html>
+  <body>
+
+    <form action="/" method="POST">
+      <label><h4><u>LOCATION</u></h4>
+        <input type="text" name="location", value="{{ current_loc }}">
+      </label>
+      <input type="submit" value="Submit">
+    </form>
+    
+    {% for day in day_data %}
+    {{ day.temperatureMin }} --- {{ day.temperatureMax }} <br>
+    {% endfor %}                            
+    
+  </body>
+</html>

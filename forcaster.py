@@ -22,6 +22,10 @@ class ForcastRetriever(object):
             return loc
         except:
             raise ValueError('Enter a valid geocode!')
+
+    def set_location(self, loc_request):
+        self.current_location = loc_request
+        self.current_data     = self.get_forcast(loc_request)
         
     def get_forcast(self, loc_request):
         loc = self._get_location(loc_request)
