@@ -5,14 +5,14 @@ from mongo_connection import MongoConnection
 from api_key import APIKEY
 
 REINIT = False
-URL    = 'https://api.forecast.io/forecast'
+URL = 'https://api.forecast.io/forecast'
+
 
 class ForcastRetriever(object):
-    
     def __init__(self):
         self.geolocator = Nominatim()
         self.db = MongoConnection(reinit=REINIT)
-        
+
     def _get_url(self, latitude, longitude):
         return '%s/%s/%f,%f' % (URL, APIKEY, latitude, longitude)
 
@@ -25,11 +25,11 @@ class ForcastRetriever(object):
 
     def set_location(self, loc_request):
         self.current_location = loc_request
-        self.current_data     = self.get_forcast(loc_request)
-        
+        self.current_data = self.get_forcast(loc_request)
+
     def get_forcast(self, loc_request):
         loc = self._get_location(loc_request)
-        
+
         if self.db.update_location(loc.latitude, loc.longitude):
             print('Refreshing location')
             url = self._get_url(loc.latitude, loc.longitude)
@@ -39,5 +39,5 @@ class ForcastRetriever(object):
         else:
             print('Getting cached location')
             data = self.db.get_location(loc.latitude, loc.longitude)
-            
+
         return data
