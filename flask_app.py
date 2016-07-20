@@ -36,8 +36,7 @@ def index():
     forecast_data = FORECASTER.get_location_list(USER)        
 
     return render_template('index.html',
-                           forecast_data = forecast_data,
-                           current_loc = loc,
+                           forecast_data = forecast_data,                           
                            icons=icons)
 
 

@@ -44,7 +44,11 @@
         <div class="container-fluid" align="center">
           <div class="col-sm-2"></div>
           {% for day in forecast_data[i]['data'] %}
-          <div class="col-sm-1">
+          {% if loop.index % 2 == 0 %}
+          <div class="col-sm-1" style="background-color:lightblue;">
+          {% else %}
+          <div class="col-sm-1" style="background-color:cyan;">
+          {% endif %}
             <i class="wi wi-{{ icons[day.icon] }}"></i><br>
             <script type="text/javascript">
               document.write(returnDate({{ day.time }}))
