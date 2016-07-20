@@ -28,7 +28,7 @@ class MongoConnection(object):
             }
         )
 
-        #self.db.cache.insert_one(
+        #self.db.location_data_cache.insert_one(
         #    {
         #        'zip':78665,
         #        'name':'austin',
@@ -42,7 +42,7 @@ class MongoConnection(object):
 
     def get_location_data(self, latitude, longitude):
         """Gets a location in the DB.  If not present returns None."""
-        return self.db.cache.find_one({
+        return self.db.location_data_cache.find_one({
             'latitude' :round(latitude, 6),
             'longitude':round(longitude, 6),
         })
@@ -71,14 +71,14 @@ class MongoConnection(object):
         data['time_updated'] = self.get_strftime()
         if result is not None:
             print('Updating entry')
-            self.db.cache.update({'_id':result['_id']}, data)
+            self.db.location_data_cache.update({'_id':result['_id']}, data)
         else:
             print('Creating entry')
-            self.db.cache.insert_one(data)
+            self.db.location_data_cache.insert_one(data)
 
     def get_location_name(self, loc_request):
-        return self.db.name_cache.find_one({'name':loc_request})
+        return self.db.location_name_cache.find_one({'name':loc_request})
 
     def cache_location_name(self, loc_request, loc):
         loc['name'] = loc_request
-        self.db.name_cache.insert_one(loc)
+        self.db.location_name_cache.insert_one(loc)
