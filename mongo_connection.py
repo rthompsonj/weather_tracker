@@ -82,3 +82,45 @@ class MongoConnection(object):
     def cache_location_name(self, loc_request, loc):
         loc['name'] = loc_request
         self.db.location_name_cache.insert_one(loc)
+
+    def get_user(self, username):
+        return self.db.users.find_one({'username':username})
+
+    def modify_user_location(self, username, location, ADD=True):
+        if not isinstance(location, str):
+            raise Exception('Location must be a string!')
+        
+        user = self.get_user(username)
+        if user is None:
+            return
+
+        location = location.lower()
+        if 'locations' not in user:
+            user['locations'] = []
+
+        if ADD:
+            if location in user['locations']:
+                print('Loc already present!')
+                return
+            user['locations'].append(location)
+        else:
+            if location not in user['locations']:
+                print('Loc not present, cannot remove!')
+                return
+            user['locations'].remove(location)
+
+        self.db.users.replace_one({'_id':user['_id']}, user)
+
+    def remove_location_index(self, username, index):
+        user = self.get_user(username)
+        if user is None:
+            return
+
+        if 'locations' not in user:
+            return
+
+        user['locations'].pop(index)
+
+        self.db.users.replace_one({'_id':user['_id']}, user)
+        
+        

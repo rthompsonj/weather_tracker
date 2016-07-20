@@ -32,10 +32,6 @@ class ForecastRetriever(object):
             print('Returning cached location name')
             return self.geolocator.parse_code(cached_loc)
 
-    #def set_location(self, loc_request):
-    #    self.current_location = loc_request
-    #    self.current_data = self.get_forecast(loc_request)
-
     def get_forecast(self, loc_request):
         loc = self._get_location(loc_request)
 
@@ -50,11 +46,23 @@ class ForecastRetriever(object):
         else:
             print('Getting cached location forecast')
             data = self.db.get_location_data(loc.latitude, loc.longitude)
-
-        #import json
-        #data['_id'] = None
-        #f = open('sample.json','w')
-        #f.write(json.dumps(data))
-        #f.close()
             
         return data
+
+
+    def get_location_list(self, username):
+        user = self.db.get_user(username)
+        if user is None:
+            print 'no user!'
+            return
+
+        if 'locations' not in user:
+            print 'no locations!'
+            return
+
+        locs = []
+        for loc_str in user['locations']:
+            loc = self._get_location(loc_str)
+            data = self.get_forecast(loc_str)
+            locs.append({'location':loc, 'data':data['daily']['data']})
+        return locs
