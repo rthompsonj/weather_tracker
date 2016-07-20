@@ -54,11 +54,11 @@ class ForecastRetriever(object):
         user = self.db.get_user(username)
         if user is None:
             print 'no user!'
-            return
+            return []
 
         if 'locations' not in user:
             print 'no locations!'
-            return
+            return []
 
         locs = []
         for loc_str in user['locations']:

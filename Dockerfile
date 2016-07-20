@@ -22,7 +22,9 @@ RUN conda install -y \
     flask
 
 RUN pip install \
-    geopy
+    geopy \
+    bcrypt \
+    passlib
 
 COPY * /WEATHER/
 COPY templates /WEATHER/templates

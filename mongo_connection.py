@@ -1,5 +1,6 @@
 import datetime
 from pymongo import MongoClient
+from passlib.hash import bcrypt
 
 DBNAME = 'weather'
 
@@ -85,6 +86,18 @@ class MongoConnection(object):
 
     def get_user(self, username):
         return self.db.users.find_one({'username':username})
+
+    def add_user(self, username, password):
+        p = bcrypt.encrypt(password)
+        self.db.users.insert_one(
+            {
+                'username':username,
+                'password':p
+            }
+        )
+
+    def verify_password(self, db_password, entered_password):
+        return bcrypt.verify(entered_password, db_password)        
 
     def modify_user_location(self, username, location, ADD=True):
         if not isinstance(location, str):

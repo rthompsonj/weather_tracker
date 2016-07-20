@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<ul class="nav nav-tabs">
+  {% for i in range(0, forecast_data|length) %}
+  {% if i==0 %}
+  <li class="active">
+    {% else %}
+  <li>
+    {% endif %}
+    <a data-toggle="tab" href="#tab{{ i }}">{{ forecast_data[i]['location'].address.split(',')[0] }}</a></li>
+  {% endfor %}
+  
+  <li><a data-toggle="tab" href="#add-tab">+</a></li>
+</ul>
+
+<div class="tab-content">
+  
+  {% for i in range(0, forecast_data|length) %}
+  {% if i==0 %}
+  <div id="tab{{ i }}" class="tab-pane fade in active">
+    {% else %}
+    <div id="tab{{ i }}" class="tab-pane fade">
+      {% endif %}
+      
+      <!-- CONTENT -->
+      <br>
+      <div class="container-fluid" align="center">
+        <div class="col-sm-2"></div>
+        {% for day in forecast_data[i]['data'] %}
+        {% if loop.index % 2 == 0 %}
+        <div class="col-sm-1" style="background-color:lightblue;">
+          {% else %}
+          <div class="col-sm-1" style="background-color:cyan;">
+            {% endif %}
+            <i class="wi wi-{{ icons[day.icon] }}"></i><br>
+            <script type="text/javascript">
+              document.write(returnDate({{ day.time }}))
+            </script><br>
+            H: {{ day.temperatureMax }} <br>
+            L: {{ day.temperatureMin }} <br>
+          </div>
+          {% endfor %}
+          <div class="col-sm-2"></div>
+        </div> <!-- first row -->
+        
+        <br>
+        <div class="container-fluid" align="center">
+          <b>{{ forecast_data[i]['location'].address }}</b>
+          <p>
+            
+            <!-- remove button -->
+            <form action="/weather" method="POST">
+              <button name="REMOVE" value="{{ i }}">Remove</button>
+            </form>
+        </div>        
+        
+        <!-- END CONTENT -->
+        
+      </div> <!-- tab{{ i }} -->
+      
+      {% endfor %}           
+      
+      <div id="add-tab" class="tab-pane fade">
+        <div class="container-fluid" align="center">
+          <form action="/weather" method="POST">
+            <label><h4><u>LOCATION</u></h4>
+              <input type="text" name="location">
+            </label>
+            <input type="submit" value="Submit">
+          </form>
+        </div>
+      </div>
+      
+    </div> <!-- tab-content -->
+
+    <br>
+    <p align="center"><a href="{{ url_for('logout') }}">Log Out</a></p>
+    
+{% endblock %}
