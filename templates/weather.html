@@ -1,6 +1,14 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<script>
+    function returnDate(unixTime) {
+        var dt = new Date(unixTime * 1000);
+        var date = dt.getMonth() + '/' + dt.getDate();
+        return date
+    }
+</script>
+
 <ul class="nav nav-tabs">
   {% for i in range(0, forecast_data|length) %}
   {% if i==0 %}

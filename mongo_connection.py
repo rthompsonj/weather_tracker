@@ -22,12 +22,12 @@ class MongoConnection(object):
         self.db = self.connection[DBNAME]
 
         # Collections
-        self.db.users.insert_one(
-            {
-                'username':'rthompson',
-                'password':'password'
-            }
-        )
+        #self.db.users.insert_one(
+        #    {
+        #        'username':'rthompson',
+        #        'password':'password'
+        #    }
+        #)
 
         #self.db.location_data_cache.insert_one(
         #    {

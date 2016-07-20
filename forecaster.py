@@ -38,9 +38,7 @@ class ForecastRetriever(object):
         if self.db.update_location(loc.latitude, loc.longitude):
             print('Refreshing location forecast')
             url = self._get_url(loc.latitude, loc.longitude)
-            print(url)
             request = urllib2.urlopen(url).read()
-            print('after request')
             data = json.loads(request)
             self.db.cache_location_data(data)
         else:
