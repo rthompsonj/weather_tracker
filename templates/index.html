@@ -26,6 +26,8 @@
         {% endif %}
         <a data-toggle="tab" href="#tab{{ i }}">{{ forecast_data[i]['location'].address.split(',')[0] }}</a></li>
       {% endfor %}
+
+      <li><a data-toggle="tab" href="#add-tab">+</a></li>
     </ul>
 
     <div class="tab-content">
@@ -57,6 +59,12 @@
         <br>
         <div class="container-fluid" align="center">
           <b>{{ forecast_data[i]['location'].address }}</b>
+          <p>
+
+            <!-- remove button -->
+            <form action="/" method="POST">
+              <input type="submit" value="Remove">
+            </form>
         </div>        
 
         <!-- END CONTENT -->
@@ -64,7 +72,18 @@
       </div> <!-- tab{{ i }} -->
 
       {% endfor %}           
-      
+
+        <div id="add-tab" class="tab-pane fade">
+          <div class="container-fluid" align="center">
+            <form action="/" method="POST">
+              <label><h4><u>LOCATION</u></h4>
+                <input type="text" name="location">
+              </label>
+              <input type="submit" value="Submit">
+            </form>
+          </div>
+        </div>
+        
     </div> <!-- tab-content -->
   
     
