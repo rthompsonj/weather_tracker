@@ -11,7 +11,7 @@
 
 <ul class="nav nav-tabs">
   {% for i in range(0, forecast_data|length) %}
-  {% if i==0 %}
+  {% if i==(forecast_data|length)-1 %}
   <li class="active">
     {% else %}
   <li>
@@ -25,7 +25,7 @@
 <div class="tab-content">
   
   {% for i in range(0, forecast_data|length) %}
-  {% if i==0 %}
+  {% if i==(forecast_data|length)-1 %}
   <div id="tab{{ i }}" class="tab-pane fade in active">
     {% else %}
     <div id="tab{{ i }}" class="tab-pane fade">
@@ -36,7 +36,7 @@
       <div class="container-fluid" align="center">
         <div class="row">
           <div class="col-sm-2"></div>
-          <div class="col-sm-8" style="background-color:red;">
+          <div class="col-sm-8" style="background-color:#CE6D68;">
             {% for alert in forecast_data[i]['data']['alerts'] %}
             <script type="text/javascript">
               document.write(returnDate({{ alert['time'] }}))
@@ -52,24 +52,25 @@
           <div class="col-sm-2"></div>
         </div>
       </div>
+      {% else %}
+      <br>
       {% endif %}
       
-      <br>
       <div class="container-fluid" align="center">
         <div class="row">
           <div class="col-sm-2"></div>
           {% for day in forecast_data[i]['data']['daily']['data'] %}
           {% if loop.index % 2 == 0 %}
-          <div class="col-sm-1" style="background-color:lightblue;">
+          <div class="col-sm-1" style="background-color:#8291AA;">
             {% else %}
-            <div class="col-sm-1" style="background-color:cyan;">
+            <div class="col-sm-1" style="background-color:#A6B0C1;">
               {% endif %}
-              <i class="wi wi-{{ icons[day.icon] }}"></i><br>
+              <h1><i class="wi wi-{{ icons[day.icon] }}"></i></h1>
               <script type="text/javascript">
                 document.write(returnDate({{ day.time }}))
               </script><br>
-              H: {{ day.temperatureMax }} <br>
-              L: {{ day.temperatureMin }} <br>
+              {{ day.temperatureMax | int }}&deg;<br>
+              {{ day.temperatureMin | int }}&deg;<br>
             </div>
             {% endfor %}
             <div class="col-sm-2"></div>
@@ -100,7 +101,7 @@
           <form action="/weather" method="POST">
             <label><h4><u>LOCATION</u></h4>
               <input type="text" name="location">
-            </label>
+            </label><br>
             <input type="submit" value="Submit">
           </form>
         </div>
