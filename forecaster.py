@@ -9,14 +9,36 @@ URL = 'https://api.forecast.io/forecast'
 
 
 class ForecastRetriever(object):
+    """Forecast wrapper.  Handle's retrieval and caching of 
+    geo locations."""
     def __init__(self):
         self.geolocator = Nominatim()
         self.db = MongoConnection(reinit=REINIT)
 
     def _get_url(self, latitude, longitude):
+        """Get the request uri for the weather API.
+
+        Parameters
+        ----------
+        latitude : float
+            Latitude of the location
+        longitude : float
+            Longitude of the location
+
+        """
         return '%s/%s/%f,%f' % (URL, APIKEY, latitude, longitude)
 
     def _get_location(self, loc_request):
+        """Get a location via a requested string.  First we check the
+        local cache to see if this same location has been requested
+        before, if not we request a new via geopy.
+
+        Parameters
+        ----------
+        loc_request : str
+            Can be anything from a zip to a description.
+
+        """
         loc_request = loc_request.lower()
         
         cached_loc = self.db.get_location_name(loc_request)
@@ -33,6 +55,15 @@ class ForecastRetriever(object):
             return self.geolocator.parse_code(cached_loc)
 
     def get_forecast(self, loc_request):
+        """Gets a location forecast from the weather API.
+
+        Parameters
+        ----------
+        loc_request : str
+            Requested location, can be anything from a zip code to a
+            description.
+        
+        """
         loc = self._get_location(loc_request)
 
         if self.db.update_location(loc.latitude, loc.longitude):
@@ -55,20 +86,22 @@ class ForecastRetriever(object):
 
 
     def get_location_list(self, username):
-        user = self.db.get_user(username)
-        if user is None:
-            print 'no user!'
-            return []
+        """Gets a specific user's current location list.
 
-        if 'locations' not in user:
-            print 'no locations!'
-            return []
+        Parameters
+        ----------
+        username : str
+            Client username.
 
+        """
         locs = []
+        user = self.db.get_user(username)
+        if user is None or 'locations' not in user:
+            return locs
+
         for loc_str in user['locations']:
             loc = self._get_location(loc_str)
             data = self.get_forecast(loc_str)
-            #locs.append({'location':loc, 'data':data['daily']['data']})
             locs.append(
                 {
                     'location':loc,
