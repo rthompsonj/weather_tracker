@@ -32,35 +32,61 @@
       {% endif %}
       
       <!-- CONTENT -->
+      {% if 'alerts' in forecast_data[i]['data'] %}
+      <div class="container-fluid" align="center">
+        <div class="row">
+          <div class="col-sm-2"></div>
+          <div class="col-sm-8" style="background-color:red;">
+            {% for alert in forecast_data[i]['data']['alerts'] %}
+            <script type="text/javascript">
+              document.write(returnDate({{ alert['time'] }}))
+              document.write(" through ")
+              document.write(returnDate({{ alert['expires'] }}))
+            </script>
+            <br>
+            <h4>{{ alert['title'] }}</h4>
+            <!-- {{ alert['description'] }}<br> -->
+            <a href="{{ alert['uri'] }}" target="_blank">Further Information</a><br>
+            {% endfor %}
+          </div>
+          <div class="col-sm-2"></div>
+        </div>
+      </div>
+      {% endif %}
+      
       <br>
       <div class="container-fluid" align="center">
-        <div class="col-sm-2"></div>
-        {% for day in forecast_data[i]['data'] %}
-        {% if loop.index % 2 == 0 %}
-        <div class="col-sm-1" style="background-color:lightblue;">
-          {% else %}
-          <div class="col-sm-1" style="background-color:cyan;">
-            {% endif %}
-            <i class="wi wi-{{ icons[day.icon] }}"></i><br>
-            <script type="text/javascript">
-              document.write(returnDate({{ day.time }}))
-            </script><br>
-            H: {{ day.temperatureMax }} <br>
-            L: {{ day.temperatureMin }} <br>
-          </div>
-          {% endfor %}
+        <div class="row">
           <div class="col-sm-2"></div>
-        </div> <!-- first row -->
+          {% for day in forecast_data[i]['data']['daily']['data'] %}
+          {% if loop.index % 2 == 0 %}
+          <div class="col-sm-1" style="background-color:lightblue;">
+            {% else %}
+            <div class="col-sm-1" style="background-color:cyan;">
+              {% endif %}
+              <i class="wi wi-{{ icons[day.icon] }}"></i><br>
+              <script type="text/javascript">
+                document.write(returnDate({{ day.time }}))
+              </script><br>
+              H: {{ day.temperatureMax }} <br>
+              L: {{ day.temperatureMin }} <br>
+            </div>
+            {% endfor %}
+            <div class="col-sm-2"></div>
+          </div> <!-- row -->
+        </div> <!-- container-fluid -->
         
         <br>
         <div class="container-fluid" align="center">
-          <b>{{ forecast_data[i]['location'].address }}</b>
-          <p>
-            
-            <!-- remove button -->
-            <form action="/weather" method="POST">
-              <button name="REMOVE" value="{{ i }}">Remove</button>
-            </form>
+          <div class="row">
+            <b>{{ forecast_data[i]['location'].address }}</b>
+            <p>
+              
+              <!-- remove button -->
+              <form action="/weather" method="POST">
+                <button name="REMOVE" value="{{ i }}">Remove</button>
+              </form>
+          </div>
         </div>        
         
         <!-- END CONTENT -->
@@ -79,9 +105,10 @@
           </form>
         </div>
       </div>
-      
+
     </div> <!-- tab-content -->
 
+    <hr>
     <br>
     <p align="center"><a href="{{ url_for('logout') }}">Log Out</a></p>
     

@@ -44,7 +44,13 @@ class ForecastRetriever(object):
         else:
             print('Getting cached location forecast')
             data = self.db.get_location_data(loc.latitude, loc.longitude)
-            
+
+        #tmp_data = data
+        #tmp_data['_id'] = 0
+        #f = open('sample.json','w')
+        #f.write(json.dumps(tmp_data))
+        #f.close()
+
         return data
 
 
@@ -62,5 +68,11 @@ class ForecastRetriever(object):
         for loc_str in user['locations']:
             loc = self._get_location(loc_str)
             data = self.get_forecast(loc_str)
-            locs.append({'location':loc, 'data':data['daily']['data']})
+            #locs.append({'location':loc, 'data':data['daily']['data']})
+            locs.append(
+                {
+                    'location':loc,
+                    'data':data
+                }
+            )
         return locs
