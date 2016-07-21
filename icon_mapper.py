@@ -1,4 +1,6 @@
 
+# Dictionary to map font icons to weather API icon strings.
+
 icons = {
     'clear-day': 'day-sunny',
     'clear-night': 'night-clear',
