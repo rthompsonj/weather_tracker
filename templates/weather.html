@@ -3,13 +3,18 @@
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<script>
-    function returnMonthDay(unixTime) {
+  <script>
+    var dayArray = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+    function getMonthDay(unixTime) {
         var dt = new Date(unixTime * 1000);
         var date = dt.getMonth() + '/' + dt.getDate();
         return date
     }
-  function returnDateTime(unixTime){
+  function getDay(unixTime){
+      var dt = new Date(unixTime * 1000);
+      return dt.getDay();
+  }
+  function getDateTime(unixTime){
       var dt = new Date(unixTime * 1000);
       var hours = ("0" + (dt.getHours())).slice(-2);
       var minutes = ("0" + (dt.getMinutes())).slice(-2);
@@ -50,9 +55,9 @@
           <div class="col-sm-8" style="background-color:#CE6D68;">
             {% for alert in forecast_data[i]['data']['alerts'] %}
             <script type="text/javascript">
-              document.write(returnMonthDay({{ alert['time'] }}))
+              document.write(getMonthDay({{ alert['time'] }}))
               document.write(" through ")
-              document.write(returnMonthDay({{ alert['expires'] }}))
+              document.write(getMonthDay({{ alert['expires'] }}))
             </script>
             <br>
             <h4>{{ alert['title'] }}</h4>
@@ -78,7 +83,10 @@
               {% endif %}
               <h1><i class="wi wi-{{ icons[day.icon] }}"></i></h1>
               <script type="text/javascript">
-                document.write(returnMonthDay({{ day.time }}))
+                document.write(dayArray[getDay({{ day.time }})])
+              </script><br>
+              <script>
+                document.write(getMonthDay({{ day.time }}))
               </script><br>
               {{ day.temperatureMax | int }}&deg;<br>
               {{ day.temperatureMin | int }}&deg;<br>
@@ -101,7 +109,7 @@
                     {
                         x: [
                             {% for hour in forecast_data[i]['data']['hourly']['data'] %}
-                            returnDateTime({{ hour.time }}),
+                            getDateTime({{ hour.time }}),
                             {% endfor %}
                         ],
                         y: [
@@ -109,10 +117,27 @@
                             {{ hour.temperature }},
                             {% endfor %}                            
                         ],
+                        text: [
+                            {% for hour in forecast_data[i]['data']['hourly']['data'] %}
+                            "{{ hour.summary }}",
+                            {% endfor %}
+                        ],                        
                         type: 'scatter'
                     }
                 ];
-                Plotly.newPlot('timePlot{{ i }}', data{{ i }});
+
+                var layout{{ i }} = {
+                    yaxis: {
+                        title: 'Temperature [F]'
+                    },
+                    xaxis: {
+                        title: 'Time',
+                        showgrid: false,
+                        tickformat: "%H:%m"
+                    }
+                };
+
+                Plotly.newPlot('timePlot{{ i }}', data{{ i }}, layout{{ i }});
               </script>
               <!-- PLOTLY STUFF END -->
               
