@@ -1,12 +1,23 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 <script>
-    function returnDate(unixTime) {
+    function returnMonthDay(unixTime) {
         var dt = new Date(unixTime * 1000);
         var date = dt.getMonth() + '/' + dt.getDate();
         return date
     }
+  function returnDateTime(unixTime){
+      var dt = new Date(unixTime * 1000);
+      var hours = ("0" + (dt.getHours())).slice(-2);
+      var minutes = ("0" + (dt.getMinutes())).slice(-2);
+      var month = ("0" + (dt.getMonth() + 1)).slice(-2);
+      var date = ("0" + (dt.getDate())).slice(-2);
+      var year = dt.getFullYear();
+      return year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':00';
+  }
 </script>
 
 <ul class="nav nav-tabs">
@@ -39,9 +50,9 @@
           <div class="col-sm-8" style="background-color:#CE6D68;">
             {% for alert in forecast_data[i]['data']['alerts'] %}
             <script type="text/javascript">
-              document.write(returnDate({{ alert['time'] }}))
+              document.write(returnMonthDay({{ alert['time'] }}))
               document.write(" through ")
-              document.write(returnDate({{ alert['expires'] }}))
+              document.write(returnMonthDay({{ alert['expires'] }}))
             </script>
             <br>
             <h4>{{ alert['title'] }}</h4>
@@ -67,7 +78,7 @@
               {% endif %}
               <h1><i class="wi wi-{{ icons[day.icon] }}"></i></h1>
               <script type="text/javascript">
-                document.write(returnDate({{ day.time }}))
+                document.write(returnMonthDay({{ day.time }}))
               </script><br>
               {{ day.temperatureMax | int }}&deg;<br>
               {{ day.temperatureMin | int }}&deg;<br>
@@ -82,6 +93,28 @@
           <div class="row">
             <b>{{ forecast_data[i]['location'].address }}</b>
             <p>
+
+              <!-- PLOTLY STUFF -->
+              <div id="timePlot{{ i }}" style="width: 480px; height: 400px;"></div>
+              <script>
+                var data{{ i }} = [
+                    {
+                        x: [
+                            {% for hour in forecast_data[i]['data']['hourly']['data'] %}
+                            returnDateTime({{ hour.time }}),
+                            {% endfor %}
+                        ],
+                        y: [
+                            {% for hour in forecast_data[i]['data']['hourly']['data'] %}
+                            {{ hour.temperature }},
+                            {% endfor %}                            
+                        ],
+                        type: 'scatter'
+                    }
+                ];
+                Plotly.newPlot('timePlot{{ i }}', data{{ i }});
+              </script>
+              <!-- PLOTLY STUFF END -->
               
               <!-- remove button -->
               <form action="/weather" method="POST">
