@@ -3,13 +3,13 @@
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-  <script>
+<script>
     var dayArray = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
-    function getMonthDay(unixTime) {
-        var dt = new Date(unixTime * 1000);
-        var date = dt.getMonth() + '/' + dt.getDate();
-        return date
-    }
+  function getMonthDay(unixTime) {
+      var dt = new Date(unixTime * 1000);
+      var date = dt.getMonth() + '/' + dt.getDate();
+      return date
+  }
   function getDay(unixTime){
       var dt = new Date(unixTime * 1000);
       return dt.getDay();
@@ -25,6 +25,8 @@
   }
 </script>
 
+
+<!-- TAB LINK FOR EACH LOCATION -->
 <ul class="nav nav-tabs">
   {% for i in range(0, forecast_data|length) %}
   {% if i==(forecast_data|length)-1 %}
@@ -37,138 +39,170 @@
   
   <li><a data-toggle="tab" href="#add-tab">+</a></li>
 </ul>
+<!-- END TAB LINK -->
 
+
+<!-- TAB CONTENT FOR EACH LOCATION -->
 <div class="tab-content">
   
   {% for i in range(0, forecast_data|length) %}
   {% if i==(forecast_data|length)-1 %}
   <div id="tab{{ i }}" class="tab-pane fade in active">
-    {% else %}
-    <div id="tab{{ i }}" class="tab-pane fade">
-      {% endif %}
+  {% else %}
+  <div id="tab{{ i }}" class="tab-pane fade">
+  {% endif %}
       
-      <!-- CONTENT -->
-      {% if 'alerts' in forecast_data[i]['data'] %}
-      <div class="container-fluid" align="center">
-        <div class="row">
-          <div class="col-sm-2"></div>
-          <div class="col-sm-8" style="background-color:#CE6D68;">
-            {% for alert in forecast_data[i]['data']['alerts'] %}
-            <script type="text/javascript">
-              document.write(getMonthDay({{ alert['time'] }}))
-              document.write(" through ")
-              document.write(getMonthDay({{ alert['expires'] }}))
-            </script>
-            <br>
-            <h4>{{ alert['title'] }}</h4>
-            <!-- {{ alert['description'] }}<br> -->
-            <a href="{{ alert['uri'] }}" target="_blank">Further Information</a><br>
-            {% endfor %}
-          </div>
-          <div class="col-sm-2"></div>
-        </div>
-      </div>
-      {% else %}
-      <br>
-      {% endif %}
-      
-      <div class="container-fluid" align="center">
-        <div class="row">
-          <div class="col-sm-2"></div>
-          {% for day in forecast_data[i]['data']['daily']['data'] %}
-          {% if loop.index % 2 == 0 %}
-          <div class="col-sm-1" style="background-color:#8291AA;">
-            {% else %}
-            <div class="col-sm-1" style="background-color:#A6B0C1;">
-              {% endif %}
-              <h1><i class="wi wi-{{ icons[day.icon] }}"></i></h1>
-              <script type="text/javascript">
-                document.write(dayArray[getDay({{ day.time }})])
-              </script><br>
-              <script>
-                document.write(getMonthDay({{ day.time }}))
-              </script><br>
-              {{ day.temperatureMax | int }}&deg;<br>
-              {{ day.temperatureMin | int }}&deg;<br>
-            </div>
-            {% endfor %}
-            <div class="col-sm-2"></div>
-          </div> <!-- row -->
-        </div> <!-- container-fluid -->
-        
+  <!-- ACTUAL CONTENT -->
+
+  <!-- ALERTS IF PRESENT -->
+  {% if 'alerts' in forecast_data[i]['data'] %}
+  <div class="container-fluid" align="center">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8" style="background-color:#CE6D68;">
+        {% for alert in forecast_data[i]['data']['alerts'] %}
+        <script type="text/javascript">
+          document.write(getMonthDay({{ alert['time'] }}))
+          document.write(" through ")
+          document.write(getMonthDay({{ alert['expires'] }}))
+        </script>
         <br>
-        <div class="container-fluid" align="center">
-          <div class="row">
-            <b>{{ forecast_data[i]['location'].address }}</b>
-            <p>
+        <h4>{{ alert['title'] }}</h4>
+        <a href="{{ alert['uri'] }}" target="_blank">Further Information</a><br>        
+        {% endfor %}
+      </div> <!-- col-sm-8 -->
+      <div class="col-sm-2"></div>
+    </div> <!-- row -->
+  </div> <!-- container-fluid -->
+  {% else %}
+  <br>
+  {% endif %}
+  <!-- END ALERTS -->
 
-              <!-- PLOTLY STUFF -->
-              <div id="timePlot{{ i }}" style="width: 480px; height: 400px;"></div>
-              <script>
-                var data{{ i }} = [
-                    {
-                        x: [
-                            {% for hour in forecast_data[i]['data']['hourly']['data'] %}
-                            getDateTime({{ hour.time }}),
-                            {% endfor %}
-                        ],
-                        y: [
-                            {% for hour in forecast_data[i]['data']['hourly']['data'] %}
-                            {{ hour.temperature }},
-                            {% endfor %}                            
-                        ],
-                        text: [
-                            {% for hour in forecast_data[i]['data']['hourly']['data'] %}
-                            "{{ hour.summary }}",
-                            {% endfor %}
-                        ],                        
-                        type: 'scatter'
-                    }
-                ];
-
-                var layout{{ i }} = {
-                    yaxis: {
-                        title: 'Temperature [F]'
-                    },
-                    xaxis: {
-                        title: 'Time',
-                        showgrid: false,
-                        tickformat: "%H:%m"
-                    }
-                };
-
-                Plotly.newPlot('timePlot{{ i }}', data{{ i }}, layout{{ i }});
-              </script>
-              <!-- PLOTLY STUFF END -->
-              
-              <!-- remove button -->
-              <form action="/weather" method="POST">
-                <button name="REMOVE" value="{{ i }}">Remove</button>
-              </form>
-          </div>
-        </div>        
-        
-        <!-- END CONTENT -->
-        
-      </div> <!-- tab{{ i }} -->
-      
-      {% endfor %}           
-      
-      <div id="add-tab" class="tab-pane fade">
-        <div class="container-fluid" align="center">
-          <form action="/weather" method="POST">
-            <label><h4><u>LOCATION</u></h4>
-              <input type="text" name="location">
-            </label><br>
-            <input type="submit" value="Submit">
-          </form>
-        </div>
+  <!-- DAILY FORECAST -->
+  <div class="container-fluid" align="center">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      {% for day in forecast_data[i]['data']['daily']['data'] %}
+      {% if loop.index % 2 == 0 %}
+      <div class="col-sm-1" style="background-color:#48DAE8;">
+      {% else %}
+      <div class="col-sm-1" style="background-color:#CAE7FF;">
+      {% endif %}
+      <h1><i class="wi wi-{{ icons[day.icon] }}"></i></h1>
+      <script type="text/javascript">
+        document.write(dayArray[getDay({{ day.time }})])
+      </script><br>
+      <script>
+        document.write(getMonthDay({{ day.time }}))
+      </script><br>
+      {{ day.temperatureMax | int }}&deg;<br>
+      {{ day.temperatureMin | int }}&deg;<br>
       </div>
+      {% endfor %}
+      <div class="col-sm-2"></div>
+    </div> <!-- row -->
+  </div> <!-- container-fluid -->
+  <!-- END DAILY FORECAST -->    
 
-    </div> <!-- tab-content -->
+  <br>
+  
+  <!-- LOCATION DESCRIPTION -->
+  <div class="container-fluid" align="center">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+        <b>{{ forecast_data[i]['location'].address }}</b>
+      </div>
+      <div class="col-sm-2"></div>
+    </div> <!-- row -->
+  </div> <!-- container-fluid -->
+  
 
-    <hr>
-    <br>
-    <p align="center"><a href="{{ url_for('logout') }}">Log Out</a></p>
+  <!-- PLOTLY STUFF -->
+  <div class="container-fluid" align="center">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+        <div id="timePlot{{ i }}"></div>
+        <!-- <div id="timePlot{{ i }}" style="width: 480px; height: 400px;"></div> -->
+        <script>
+            var data{{ i }} = [
+                {
+                    x: [
+                        {% for hour in forecast_data[i]['data']['hourly']['data'] %}
+                        getDateTime({{ hour.time }}),
+                        {% endfor %}
+                    ],
+                    y: [
+                        {% for hour in forecast_data[i]['data']['hourly']['data'] %}
+                        {{ hour.temperature }},
+                        {% endfor %}                            
+                    ],
+                    text: [
+                        {% for hour in forecast_data[i]['data']['hourly']['data'] %}
+                        "{{ hour.summary }}",
+                        {% endfor %}
+                    ],                        
+                    type: 'scatter'
+                }
+            ];
+            
+            var layout{{ i }} = {
+                yaxis: {
+                    title: 'Temperature [F]'
+                },
+                xaxis: {
+                    title: 'Time',
+                    //showgrid: false,
+                    tickformat: "%H:%m"
+                }
+            };
+            
+            Plotly.newPlot('timePlot{{ i }}', data{{ i }}, layout{{ i }});
+        </script>        
+      </div> <!-- col-sm-8 -->
+      <div class="col-sm-2"></div>
+    </div> <!-- row -->
+  </div> <!-- container-fluid -->
+  <!-- END PLOTLY STUFF -->
+
+  <!-- REMOVE BUTTON -->
+  <div class="container-fluid" align="center">
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+        <form action="/weather" method="POST">
+          <button name="REMOVE" value="{{ i }}">Remove</button>
+        </form>
+      </div> <!-- col-sm-8 -->
+    </div> <!-- row -->
+  </div> <!-- container-fluid -->
+  <!-- END REMOVE BUTTON -->
     
-{% endblock %}
+  </div> <!-- tab{{ i }} -->
+  <!-- END TAB LOOP -->
+  
+  {% endfor %}           
+
+  <!-- ADD NEW LOCATION TAB -->
+  <div id="add-tab" class="tab-pane fade">
+    <div class="container-fluid" align="center">
+      <form action="/weather" method="POST">
+        <label><h4><u>LOCATION</u></h4>
+          <input type="text" name="location">
+        </label><br>
+        <input type="submit" value="ADD">
+      </form>
+    </div>
+  </div>
+  
+  </div>
+  <!-- END TAB CONTENT FOR EACH LOCATION -->
+  
+  <hr>
+
+  <p align="center"><a href="{{ url_for('logout') }}">Log Out</a></p>
+  
+  {% endblock %}
+  
