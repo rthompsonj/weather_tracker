@@ -23,6 +23,16 @@
       var year = dt.getFullYear();
       return year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':00';
   }
+  function getTime(unixTime){
+      var dt = new Date(unixTime * 1000);
+      var hour = dt.getHours();
+      var suffix = "AM";
+      if(hour >= 12){
+          suffix = "PM";
+          hour -= 12;
+      }
+      return hour + ':' + dt.getMinutes() + " " + suffix;
+  }
 </script>
 
 
@@ -54,6 +64,31 @@
       
   <!-- ACTUAL CONTENT -->
 
+  <!-- CURRENT FORECAST -->
+  <div class="container-fluid" align="center">
+    <div class="row">
+      <div class="col-sm-4"></div>
+      <div class="col-sm-2" align="right">
+        <h1>
+          <i class="wi wi-{{ icons[forecast_data[i]['data']['currently'].icon] }}" title="{{ forecast_data[i]['data']['currently'].summary }}">
+          </i>
+        </h1>
+      </div>
+      <div class="col-sm-2" align="left">
+        <br>
+        Time: <script>document.write(getTime({{ forecast_data[i]['data']['currently'].time }}))</script>
+        <br>
+        Temp: {{ forecast_data[i]['data']['currently'].temperature }}&deg;
+        <br>
+        Feels like: {{ forecast_data[i]['data']['currently'].apparentTemperature }}&deg;
+      </div>      
+      <div class="col-sm-4"></div>
+    </div>    
+  </div>
+  <!-- END CURRENT FORECAST -->
+
+
+  
   <!-- ALERTS IF PRESENT -->
   {% if 'alerts' in forecast_data[i]['data'] %}
   <div class="container-fluid" align="center">
@@ -89,15 +124,15 @@
       {% else %}
       <div class="col-sm-1" style="background-color:#CAE7FF;">
       {% endif %}
-      <h1><i class="wi wi-{{ icons[day.icon] }}"></i></h1>
+      <h1><i class="wi wi-{{ icons[day.icon] }}" title="{{ day.summary }}"></i></h1>
       <script type="text/javascript">
         document.write(dayArray[getDay({{ day.time }})])
       </script><br>
       <script>
         document.write(getMonthDay({{ day.time }}))
       </script><br>
-      {{ day.temperatureMax | int }}&deg;<br>
-      {{ day.temperatureMin | int }}&deg;<br>
+      H: {{ day.temperatureMax | int }}&deg;<br>
+      L: {{ day.temperatureMin | int }}&deg;<br>
       </div>
       {% endfor %}
       <div class="col-sm-2"></div>
@@ -118,8 +153,9 @@
     </div> <!-- row -->
   </div> <!-- container-fluid -->
   
-
-  <!-- PLOTLY STUFF -->
+  <hr>
+  
+  <!-- HOURLY FORECAST -->
   <div class="container-fluid" align="center">
     <div class="row">
       <div class="col-sm-2"></div>
@@ -150,22 +186,25 @@
             
             var layout{{ i }} = {
                 yaxis: {
-                    title: 'Temperature [F]'
+                    title: 'Temperature [F]',
+                    fixedrange: true
                 },
                 xaxis: {
-                    title: 'Time',
-                    //showgrid: false,
-                    tickformat: "%H:%m"
-                }
+                    title: 'Time [H:m]',
+                    tickformat: "%H:%m",
+                    fixedrange: true
+                },
+                showlegend: false,
+                title: 'Hourly Forecast'
             };
             
-            Plotly.newPlot('timePlot{{ i }}', data{{ i }}, layout{{ i }});
+          Plotly.newPlot('timePlot{{ i }}', data{{ i }}, layout{{ i }}, {displayModeBar: false});
         </script>        
       </div> <!-- col-sm-8 -->
       <div class="col-sm-2"></div>
     </div> <!-- row -->
   </div> <!-- container-fluid -->
-  <!-- END PLOTLY STUFF -->
+  <!-- END HOURLY FORECAST -->
 
   <!-- REMOVE BUTTON -->
   <div class="container-fluid" align="center">
