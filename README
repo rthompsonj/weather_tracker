@@ -4,8 +4,9 @@ To launch this application you will first need to sign up for an account at the 
 
 https://developer.forecast.io/
 
-Once you have obtained your key, you need to create a new python file called "api_key.py" in the root directory of this project, and simply paste your key as the APIKEY variable:
+Once you have obtained your key, create a new python file called "api_key.py" in the root directory of this project, and simply paste your key as the APIKEY variable:
 
 APIKEY = 'YOUR API KEY HERE'
 
 
+This app assumes a local Mongo database with a standard connection.  To change these variables see mongo_connection.py.
