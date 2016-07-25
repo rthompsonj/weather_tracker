@@ -43,13 +43,11 @@ class ForecastRetriever(object):
         
         cached_loc = self.db.get_location_name(loc_request)
         if cached_loc is None:
-            try:
-                loc = self.geolocator.geocode(loc_request)
+            loc = self.geolocator.geocode(loc_request)
+            if loc is not None:
                 self.db.cache_location_name(loc_request, loc.raw)
                 print('Caching location name')
-                return loc
-            except:
-                raise ValueError('Enter a valid geocode!')
+            return loc
         else:
             print('Returning cached location name')
             return self.geolocator.parse_code(cached_loc)
@@ -101,6 +99,9 @@ class ForecastRetriever(object):
 
         for loc_str in user['locations']:
             loc = self._get_location(loc_str)
+            if loc is None:
+                self.db.modify_user_location(username, str(loc_str), ADD=False)
+                continue
             data = self.get_forecast(loc_str)
             locs.append(
                 {
