@@ -1,0 +1,11 @@
+Welcome to a simple weather tracker web app!
+
+To launch this application you will first need to sign up for an account at the following address to obtain an API key:
+
+https://developer.forecast.io/
+
+Once you have obtained your key, you need to create a new python file called "api_key.py" in the root directory of this project, and simply paste your key as the APIKEY variable:
+
+APIKEY = 'YOUR API KEY HERE'
+
+
