@@ -31,7 +31,7 @@
           suffix = "PM";
           hour -= 12;
       }
-      return hour + ':' + dt.getMinutes() + " " + suffix;
+      return hour + ':' + ("0" + (dt.getMinutes())).slice(-2) + " " + suffix;
   }
 </script>
 
